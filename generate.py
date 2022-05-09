@@ -51,8 +51,8 @@ def randomize(target: List[T]) -> Generator[T, None, None]:
 
 
 def main(cidr: str, port_range: str, output: TextIO = sys.stdout) -> None:
-    hosts: List[str] = list(parse_cidr(cidr))
-    ports: List[int] = list(parse_port_range(port_range))
+    hosts = list(parse_cidr(cidr))
+    ports = list(parse_port_range(port_range))
 
     for host in randomize(hosts):
         for port in randomize(ports):
