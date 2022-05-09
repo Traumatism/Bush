@@ -289,8 +289,6 @@ func Wait(running *int, threads *int) {
 
 func main() {
 
-	fmt.Fprintln(os.Stderr, "Bush by @toastakerman <3")
-
 	threads := flag.Int("threads", 100, "Number of threads")
 	timeout := flag.Int("timeout", 5000, "Timeout in milliseconds")
 	format := flag.String("format", "human", "Output format (json, human, raw)")
