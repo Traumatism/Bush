@@ -58,12 +58,11 @@ def main(
 ) -> None:
     ports = list(parse_port_range(port_range))
 
-    total: List[str] = []
+    total: Generator = (
+        (host, port) for host in hosts for port in randomize(ports)
+    )
 
-    for host in hosts:
-        total.extend(f"{host}:{port}" for port in ports)
-
-    for target in randomize(total):
+    for target in randomize(list(total)):
         output.write(f"{target}\n")
 
 
