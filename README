@@ -25,5 +25,6 @@ build.sh
 --------
 Build the file above to out/
 
-
+sample command
+--------------
 ./generate -cidr 51.79.0.0/16 -ports 25565,25566 | ./randomize | ./check -threads 100 -format json | tee output.json | jq -c | python3 -m utils.database

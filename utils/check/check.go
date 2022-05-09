@@ -305,6 +305,8 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
+	fmt.Fprintln(os.Stderr, "Scanning...")
+
 	if *stats {
 		targets := []string{}
 
