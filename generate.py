@@ -59,7 +59,7 @@ def main(
     ports = list(parse_port_range(port_range))
 
     for host in randomize(list(hosts)):
-        for port in randomize(ports):
+        for port in ports:
             output.write(f"{host}:{port}\n")
 
 
