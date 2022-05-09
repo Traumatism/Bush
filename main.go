@@ -276,14 +276,25 @@ func ShowStats(stats *Stats) {
 	}
 }
 
+func Wait(running *int, threads *int) {
+	for {
+
+		if *running <= *threads {
+			break
+		}
+
+		time.Sleep(time.Millisecond * 500)
+	}
+}
+
 func main() {
 
 	fmt.Fprintln(os.Stderr, "Bush by @toastakerman <3")
 
-	threads := flag.Int("threads", 10, "Number of threads")
+	threads := flag.Int("threads", 100, "Number of threads")
 	timeout := flag.Int("timeout", 5000, "Timeout in milliseconds")
 	format := flag.String("format", "human", "Output format (json, human, raw)")
-	stats := flag.Bool("stats", false, "Show stats every second")
+	stats := flag.Bool("stats", false, "Show stats every second (note: it wille disable the stream mode)")
 
 	flag.Parse()
 
@@ -311,14 +322,7 @@ func main() {
 
 		for _, target := range targets {
 
-			for {
-
-				if running <= *threads {
-					break
-				}
-
-				time.Sleep(time.Millisecond * 500)
-			}
+			Wait(&running, threads)
 
 			running++
 
@@ -342,14 +346,7 @@ func main() {
 
 			target := scanner.Text()
 
-			for {
-
-				if running <= *threads {
-					break
-				}
-
-				time.Sleep(time.Millisecond * 500)
-			}
+			Wait(&running, threads)
 
 			running++
 

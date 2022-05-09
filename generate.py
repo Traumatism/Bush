@@ -4,10 +4,10 @@ import random
 import sys
 import os
 
-from typing import Iterable, List, TextIO, TypeVar
+from typing import Generator, List, TextIO, TypeVar
 
 
-def parse_port_range(port_range: str) -> Iterable[int]:
+def parse_port_range(port_range: str) -> Generator[int, None, None]:
     """
     Parse a port range string into a list of ports.
     """
@@ -29,7 +29,7 @@ def parse_port_range(port_range: str) -> Iterable[int]:
         yield int(port_range)
 
 
-def parse_cidr(cidr: str) -> Iterable[str]:
+def parse_cidr(cidr: str) -> Generator[str, None, None]:
     """
     Parse a CIDR string into a list of IP addresses.
     """
@@ -39,25 +39,24 @@ def parse_cidr(cidr: str) -> Iterable[str]:
     )
 
 
-T = TypeVar("T")
+T = TypeVar("T", str, int)
 
 
-def randomize(target: List[T]) -> List[T]:
+def randomize(target: List[T]) -> Generator[T, None, None]:
     """
     Randomize the order of a list.
     """
     random.shuffle(target)
-    return target
+    yield from target
 
 
 def main(cidr: str, port_range: str, output: TextIO = sys.stdout) -> None:
-    hosts: List[str] = []
-
-    for ip in parse_cidr(cidr):
-        hosts.extend(f"{ip}:{port}" for port in parse_port_range(port_range))
+    hosts: List[str] = list(parse_cidr(cidr))
+    ports: List[int] = list(parse_port_range(port_range))
 
     for host in randomize(hosts):
-        output.write(f"{host}\n")
+        for port in randomize(ports):
+            output.write(f"{host}:{port}\n")
 
 
 if __name__ == "__main__":
