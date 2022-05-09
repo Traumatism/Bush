@@ -1,8 +1,7 @@
 Bush
 
 +--
-Utilities for private Internet scanning project.
-This repository should be ignored.
+Utilities for Minecraft Internet scanning project.
 +--
 
 utils/check/check.go
@@ -23,4 +22,4 @@ build.sh
 Build the file above to out/
 
 
-./generate -c 51.0.0.0/8 -p 25565 | ./randomize | ./check -threads 100 -format json | tee output.json | jq -c | python3 -m utils.database
+./generate -cidr 51.79.0.0/16 -ports 25565,25566 | ./randomize | ./check -threads 100 -format json | tee output.json | jq -c | python3 -m utils.database
