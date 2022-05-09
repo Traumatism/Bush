@@ -1,10 +1,11 @@
 import ipaddress
 import argparse
+import itertools
 import random
 import sys
 import os
 
-from typing import Generator, List, TextIO, TypeVar
+from typing import Generator, Iterable, List, TextIO, TypeVar
 
 
 def parse_port_range(port_range: str) -> Generator[int, None, None]:
@@ -50,11 +51,14 @@ def randomize(target: List[T]) -> Generator[T, None, None]:
     yield from target
 
 
-def main(cidr: str, port_range: str, output: TextIO = sys.stdout) -> None:
-    hosts = list(parse_cidr(cidr))
+def main(
+    hosts: Iterable[str],
+    port_range: str,
+    output: TextIO = sys.stdout,
+) -> None:
     ports = list(parse_port_range(port_range))
 
-    for host in randomize(hosts):
+    for host in randomize(list(hosts)):
         for port in randomize(ports):
             output.write(f"{host}:{port}\n")
 
@@ -98,14 +102,19 @@ if __name__ == "__main__":
     arguments = parser.parse_args()
 
     if os.path.exists(arguments.cidr) and os.path.isfile(arguments.cidr):
-
         with open(arguments.cidr, "r") as f:
-            map(
-                lambda x: main(x, arguments.ports, arguments.output),
-                f.readlines(),
-            )
+            cidrs = f.read().splitlines()
+
+        hosts = itertools.chain.from_iterable(map(parse_cidr, cidrs))
 
     else:
-        main(arguments.cidr, arguments.ports, arguments.output)
+
+        hosts = parse_cidr(arguments.cidr)
+
+    main(
+        hosts,
+        arguments.ports,
+        arguments.output,
+    )
 
     sys.exit(1)
