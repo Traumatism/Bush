@@ -5,13 +5,22 @@ Utilities for private Internet scanning project.
 This repository should be ignored.
 +--
 
-utils/check/check.go: Check Minecraft servers from STDIN
+utils/check/check.go
+--------------------
+Check Minecraft servers from STDIN
 
-utils/generate/generate.go: Generate host:port from cidr/file and ports range
+utils/generate/generate.go
+--------------------------
+Generate host:port from cidr/file and ports range
 
-utils/randomize/randomize.go: Shuffle STDIN
+utils/randomize/randomize.go
+----------------------------
+Shuffle STDIN
+Used to prevent VPS providers to find out you are scanning their network and ban you.
 
-build.sh: Build the file above to out/
+build.sh
+--------
+Build the file above to out/
 
 
-./generate -c 51.0.0.0/8 -p 25565 | ./randomize | ./check -threads 100 -format raw | tee output.json | jq -c
+./generate -c 51.0.0.0/8 -p 25565 | ./randomize | ./check -threads 100 -format raw | tee output.json | jq -c | python3 -m utils.database
