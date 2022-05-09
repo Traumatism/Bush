@@ -58,9 +58,13 @@ def main(
 ) -> None:
     ports = list(parse_port_range(port_range))
 
-    for host in randomize(list(hosts)):
-        for port in ports:
-            output.write(f"{host}:{port}\n")
+    total: List[str] = []
+
+    for host in hosts:
+        total.extend(f"{host}:{port}" for port in ports)
+
+    for target in randomize(total):
+        output.write(f"{target}\n")
 
 
 if __name__ == "__main__":
