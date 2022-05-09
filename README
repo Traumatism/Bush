@@ -23,4 +23,4 @@ build.sh
 Build the file above to out/
 
 
-./generate -c 51.0.0.0/8 -p 25565 | ./randomize | ./check -threads 100 -format raw | tee output.json | jq -c | python3 -m utils.database
+./generate -c 51.0.0.0/8 -p 25565 | ./randomize | ./check -threads 100 -format json | tee output.json | jq -c | python3 -m utils.database
