@@ -4,3 +4,14 @@ Bush
 Utilities for private Internet scanning project.
 This repository should be ignored.
 +--
+
+main.go: Check Minecraft servers from STDIN
+
+utils/generate/generate.go: Generate host:port from cidr/file and ports range
+
+utils/randomize/randomize.go: Shuffle STDIN
+
+build.sh: Build the file above to out/
+
+
+./generate -c 51.0.0.0/8 -p 25565 | ./randomize | ./bush -threads 100 -format raw | tee output.json | jq -c
