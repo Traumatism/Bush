@@ -63,14 +63,15 @@ func sendMessage(conn net.Conn, msgType MessageType, msg string) (string, error)
 	}
 
 	respBytes := make([]byte, 16)
-	n, err := conn.Read(respBytes)
+	data, err := conn.Read(respBytes)
 
 	if err != nil {
 		return "", err
 	}
 
 	hasher := sha256.New()
-	hasher.Write(respBytes[:n])
+	hasher.Write(respBytes[:data])
+
 	return hex.EncodeToString(hasher.Sum(nil)), nil
 }
 
@@ -99,22 +100,18 @@ func (s *Scanner) scanHost(target string, passwords []string) {
 	if err != nil || (sum != LOGIN_SUCCESS && sum != LOGIN_ERROR) {
 		return
 	}
-	println("ok")
 
-	i := 0
 	for _, password := range passwords {
+
 		sum, _ := sendMessage(conn, 3, password)
 
-		if sum == LOGIN_ERROR { // password is wrong
-		} else if sum == LOGIN_SUCCESS { // password is correct
+		if sum == LOGIN_ERROR {
+			continue
+		} else if sum == LOGIN_SUCCESS {
 			log.Printf("%s => %s\n", target, password)
 			return
-		} else { // wtf??
-			log.Println("Wtf??", sum)
 		}
 	}
-
-	println(i)
 
 }
 
@@ -156,10 +153,6 @@ func main() {
 	}
 
 	f, err := os.Open(*wordlist)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	if err != nil {
 		log.Fatal(err)
