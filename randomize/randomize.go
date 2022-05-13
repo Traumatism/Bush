@@ -17,9 +17,7 @@ func main() {
 
 	for i := len(lines) - 1; i > 0; i-- {
 		j := rand.Intn(i + 1)
-
 		lines[i], lines[j] = lines[j], lines[i]
-
 		fmt.Printf("%s\n%s", lines[i], lines[j])
 	}
 
