@@ -37,7 +37,7 @@ func (wrapper *byteReaderWrap) ReadByte() (byte, error) {
 	return buf[0], nil
 }
 
-func ReadVarint(reader io.Reader) (uint32, error) {
+func readVarint(reader io.Reader) (uint32, error) {
 	value, err := binary.ReadUvarint(&byteReaderWrap{reader})
 	if err != nil {
 		return 0, err
@@ -45,7 +45,7 @@ func ReadVarint(reader io.Reader) (uint32, error) {
 	return uint32(value), nil
 }
 
-func ScanTarget(target string, timeout time.Duration) {
+func scanTarget(target string, timeout time.Duration) {
 	conn, err := net.DialTimeout("tcp", target, timeout)
 
 	if err != nil {
@@ -75,7 +75,7 @@ func ScanTarget(target string, timeout time.Duration) {
 		0x00,
 	})
 
-	pkt_len, err := ReadVarint(conn)
+	pkt_len, err := readVarint(conn)
 
 	if err != nil {
 		return
@@ -87,11 +87,11 @@ func ScanTarget(target string, timeout time.Duration) {
 		return
 	}
 
-	if packet_id, err := ReadVarint(pkt_buf); err != nil || uint32(packet_id) != uint32(0x00) {
+	if packet_id, err := readVarint(pkt_buf); err != nil || uint32(packet_id) != uint32(0x00) {
 		return
 	}
 
-	pkt_data_len, err := ReadVarint(pkt_buf)
+	pkt_data_len, err := readVarint(pkt_buf)
 
 	if err != nil {
 		return
@@ -154,7 +154,7 @@ func main() {
 
 			defer func() { running-- }()
 
-			ScanTarget(target, time.Millisecond*time.Duration(*timeout))
+			scanTarget(target, time.Millisecond*time.Duration(*timeout))
 		}(target)
 
 	}

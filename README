@@ -17,10 +17,6 @@ utils/randomize/randomize.go
 Shuffle STDIN
 Used to prevent VPS providers to find out you are scanning their network and ban you.
 
-utils/database
---------------
-Used to store scanned hosts in a MongoDB database.
-
 build.sh
 --------
 Build the file above to out/
