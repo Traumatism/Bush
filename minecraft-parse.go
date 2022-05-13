@@ -38,32 +38,23 @@ func (cmd *Output) hashedFavicon() string {
 }
 
 func (cmd *Output) parsedDescription() string {
-	description_dict := cmd.Data.Description
-	parsed_description := ""
+	desc := cmd.Data.Description
 
-	if description_dict["text"] != nil {
-		parsed_description += description_dict["text"].(string)
+	if descStr, ok := desc["text"]; ok {
+		return descStr.(string)
 	}
 
-	if description_dict["translate"] != nil {
-		parsed_description += description_dict["translate"].(string)
+	if descStr, ok := desc["translate"]; ok {
+		return descStr.(string)
 	}
 
-	if description_dict["extra"] != nil {
-		for _, extra_dict := range description_dict["extra"].([]interface{}) {
-			extra_dict := extra_dict.(map[string]interface{})
-
-			if extra_dict["text"] != nil {
-				parsed_description += extra_dict["text"].(string)
-			}
-
-			if extra_dict["translate"] != nil {
-				parsed_description += extra_dict["translate"].(string)
-			}
+	if descMap, ok := desc["extra"]; ok {
+		if descMapStr, ok := descMap.(map[string]interface{})["text"]; ok {
+			return descMapStr.(string)
 		}
 	}
 
-	return parsed_description
+	return ""
 }
 
 func parseData(data string) {
