@@ -4,15 +4,15 @@ Bush
 Utilities for Minecraft Internet scanning project.
 +--
 
-utils/check/check.go
+check.go
 --------------------
 Check Minecraft servers from STDIN
 
-utils/generate/generate.go
+generate.go
 --------------------------
 Generate host:port from cidr/file and ports range
 
-utils/randomize/randomize.go
+randomize.go
 ----------------------------
 Shuffle STDIN
 Used to prevent VPS providers to find out you are scanning their network and ban you.
