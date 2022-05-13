@@ -66,20 +66,31 @@ func (cmd *Output) parsedDescription() string {
 	return parsed_description
 }
 
+func parseData(data string) {
+	output := Output{}
+
+	err := json.Unmarshal([]byte(data), &output)
+
+	if err != nil {
+		return
+	}
+
+	output.Data.Favicon = output.hashedFavicon()
+	output.Data.ParsedDescription = output.parsedDescription()
+
+	json, err := json.Marshal(output)
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(string(json))
+}
+
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for scanner.Scan() {
-		output := &Output{}
-
-		if json.Unmarshal([]byte(scanner.Text()), &output) != nil {
-			continue
-		}
-
-		output.Data.Favicon = output.hashedFavicon()
-		output.Data.ParsedDescription = output.parsedDescription()
-
-		json, _ := json.Marshal(output)
-		fmt.Println(string(json))
+		parseData(scanner.Text())
 	}
 }
