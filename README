@@ -21,6 +21,11 @@ build.sh
 --------
 Build the file above to out/
 
-sample command
---------------
-./generate -cidr 51.79.0.0/16 -ports 25565,25566 | ./randomize | ./check -threads 100 | tee output.json | jq -c
+sample commands
+---------------
+./generate | ./randomize | ./minecraft | ./minecraft-parse | jq -c
+./generate | ./randomize | ./minecraft | jq -c
+./generate | ./minecraft | jq -c
+./zmap -p 25565 -f 'saddr,sport' | sed 's/,/:/g' | ./minecraft | jq -c
+
+etc.
