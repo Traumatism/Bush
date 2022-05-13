@@ -14,67 +14,6 @@ import (
 	"encoding/hex"
 )
 
-type MessageType int32
-
-type Message struct {
-	Length int32
-	ID     int32
-	Type   MessageType
-	Body   string
-}
-
-const (
-	MsgResponse MessageType = iota
-	headerSize              = 10
-)
-
-func encodeMessage(msg Message) ([]byte, error) {
-	buf := new(bytes.Buffer)
-	for _, v := range []interface{}{
-		msg.Length,
-		msg.ID,
-		msg.Type,
-		[]byte(msg.Body),
-		[]byte{0, 0},
-	} {
-		if err := binary.Write(buf, binary.LittleEndian, v); err != nil {
-			return nil, err
-		}
-	}
-	return buf.Bytes(), nil
-}
-
-func sendMessage(conn net.Conn, msgType MessageType, msg string) (string, error) {
-	request := Message{
-		Length: int32(len(msg) + headerSize),
-		ID:     0,
-		Type:   msgType,
-		Body:   msg,
-	}
-
-	encoded, err := encodeMessage(request)
-
-	if err != nil {
-		return "", err
-	}
-
-	if _, err := conn.Write(encoded); err != nil {
-		return "", err
-	}
-
-	respBytes := make([]byte, 16)
-	data, err := conn.Read(respBytes)
-
-	if err != nil {
-		return "", err
-	}
-
-	hasher := sha256.New()
-	hasher.Write(respBytes[:data])
-
-	return hex.EncodeToString(hasher.Sum(nil)), nil
-}
-
 type Scanner struct {
 	passwords []string
 	timeout   time.Duration
@@ -93,26 +32,62 @@ func (s *Scanner) scanHost(target string, passwords []string) {
 		return
 	}
 
-	defer conn.Close()
+	for i := 0; i < len(passwords); i++ {
+		conn.SetReadDeadline(time.Now().Add(s.timeout))
 
-	sum, err := sendMessage(conn, 3, "Zi4kHuhu1")
+		password := passwords[i]
 
-	if err != nil || (sum != LOGIN_SUCCESS && sum != LOGIN_ERROR) {
-		return
-	}
+		buf := new(bytes.Buffer)
 
-	for _, password := range passwords {
+		for _, data := range []interface{}{
+			int32(len(password) + 10),
+			int32(0),
+			int32(3),
+			[]byte(password),
+			[]byte{0, 0},
+		} {
 
-		sum, _ := sendMessage(conn, 3, password)
+			if err := binary.Write(buf, binary.LittleEndian, data); err != nil {
+				conn.Close()
+				return
+			}
 
-		if sum == LOGIN_ERROR {
-			continue
-		} else if sum == LOGIN_SUCCESS {
+		}
+
+		encoded := buf.Bytes()
+
+		if _, err := conn.Write(encoded); err != nil {
+			conn.Close()
+			return
+		}
+
+		respBytes := make([]byte, 16)
+
+		n, err := conn.Read(respBytes)
+
+		if err != nil {
+			conn.Close()
+			return
+		}
+
+		hasher := sha256.New()
+
+		hasher.Write(respBytes[:n])
+
+		sum := hex.EncodeToString(hasher.Sum(nil))
+
+		if err != nil || (sum != LOGIN_SUCCESS && sum != LOGIN_ERROR) {
+			conn.Close()
+			return
+		}
+
+		if sum == LOGIN_SUCCESS {
 			log.Printf("%s => %s\n", target, password)
+			conn.Close()
 			return
 		}
 	}
-
+	conn.Close()
 }
 
 func (s *Scanner) Scan() {
@@ -153,6 +128,10 @@ func main() {
 	}
 
 	f, err := os.Open(*wordlist)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if err != nil {
 		log.Fatal(err)

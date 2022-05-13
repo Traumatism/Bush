@@ -20,8 +20,7 @@ func main() {
 
 		lines[i], lines[j] = lines[j], lines[i]
 
-		fmt.Println(lines[i])
-		fmt.Println(lines[j])
+		fmt.Printf("%s\n%s", lines[i], lines[j])
 	}
 
 }
