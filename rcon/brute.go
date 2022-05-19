@@ -70,6 +70,7 @@ func (s *Scanner) scanHost(target string, passwords []string) {
 			return
 		}
 
+		log.Println(respBytes[:n])
 		hasher := sha256.New()
 
 		hasher.Write(respBytes[:n])

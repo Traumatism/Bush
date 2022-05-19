@@ -12,19 +12,13 @@ generate.go
 --------------------------
 Generate host:port from cidr/file and ports range
 
-randomize.go
-----------------------------
-Shuffle STDIN
-Used to prevent VPS providers to find out you are scanning their network and ban you.
-
 build.sh
 --------
 Build the file above to out/
 
 sample commands
 ---------------
-./generate | ./randomize | ./minecraft | ./minecraft-parse | jq -c
-./generate | ./randomize | ./minecraft | jq -c
+./generate | shuf | ./minecraft | ./minecraft-parse | jq -c
 ./generate | ./minecraft | jq -c
 ./zmap -p 25565 -f 'saddr,sport' | sed 's/,/:/g' | ./minecraft | jq -c
 
